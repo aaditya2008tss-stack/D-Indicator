@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D-Indicator - Delhi Metro (DMRC) Route & Fare Guide</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            dmrcYellow: '#EAB308',
+            dmrcBlue: '#2563EB',
+            dmrcRed: '#DC2626',
+            dmrcViolet: '#7C3AED',
+            dmrcMagenta: '#BE185D',
+            dmrcPink: '#EC4899',
+            dmrcAirport: '#EA580C',
+            dmrcGreen: '#16A34A',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar for dropdowns and panels */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col font-sans selection:bg-rose-100 selection:text-rose-900">
+
+  <!-- Main Navigation Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Logo with Delhi Metro multi-color wheel hint -->
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-yellow-500 to-red-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+          <i data-lucide="subway" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-slate-900 tracking-tight text-lg">D-Indicator</span>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 uppercase tracking-wide">DMRC</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">Delhi Metro Route & Fare Calculator</p>
+        </div>
+      </div>
+
+      <!-- Quick Line Badges in Header -->
+      <div class="hidden sm:flex items-center gap-2 text-xs font-semibold">
+        <span class="inline-flex items-center gap-1 text-slate-600">
+          <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span> Yellow
+        </span>
+        <span class="inline-flex items-center gap-1 text-slate-600">
+          <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> Blue
+        </span>
+        <span class="inline-flex items-center gap-1 text-slate-600">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Red
+        </span>
+        <span class="inline-flex items-center gap-1 text-slate-600">
+          <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span> Violet
+        </span>
+        <span class="inline-flex items-center gap-1 text-slate-600">
+          <span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span> Pink
+        </span>
+        <span class="inline-flex items-center gap-1 text-slate-600">
+          <span class="w-2.5 h-2.5 rounded-full bg-orange-600"></span> Airport
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- Search / Journey Planner Card -->
+    <div class="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-sm relative overflow-hidden">
+      <!-- Background subtle glow -->
+      <div class="absolute -right-20 -top-20 w-56 h-56 bg-blue-50 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="relative z-10 space-y-4">
+        
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <i data-lucide="compass" class="w-4 h-4 text-blue-600"></i> Plan Metro Journey
+          </h2>
+          <span class="text-xs text-slate-400 font-medium">Quickest & Cheapest Routes</span>
+        </div>
+
+        <!-- Input row with swap button -->
+        <div class="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-3 items-center">
+          
+          <!-- From Station -->
+          <div class="relative">
+            <label for="fromStationInput" class="block text-xs font-semibold text-slate-600 mb-1.5 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-200"></span> From Station (Source)
+            </label>
+            <div class="relative">
+              <input 
+                id="fromStationInput"
+                type="text" 
+                placeholder="e.g. Rajiv Chowk, Noida, Hauz Khas..."
+                autocomplete="off"
+                class="w-full pl-10 pr-4 py-3 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 text-slate-900 font-semibold text-sm outline-none transition"
+              >
+              <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5"></i>
+            </div>
+            <!-- Suggestion dropdown From -->
+            <ul id="fromSuggestions" class="hidden absolute top-full left-0 right-0 z-30 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl py-1 text-sm font-medium"></ul>
+          </div>
+
+          <!-- Swap Button -->
+          <div class="flex justify-center md:pt-6">
+            <button 
+              id="swapBtn"
+              type="button" 
+              title="Swap From and To"
+              class="w-10 h-10 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 flex items-center justify-center text-slate-600 transition shadow-sm active:scale-95"
+            >
+              <i data-lucide="arrow-left-right" class="w-4 h-4 hidden md:block"></i>
+              <i data-lucide="arrow-up-down" class="w-4 h-4 block md:hidden"></i>
+            </button>
+          </div>
+
+          <!-- To Station -->
+          <div class="relative">
+            <label for="toStationInput" class="block text-xs font-semibold text-slate-600 mb-1.5 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-red-500 ring-2 ring-red-200"></span> To Station (Destination)
+            </label>
+            <div class="relative">
+              <input 
+                id="toStationInput"
+                type="text" 
+                placeholder="e.g. IGI Airport, Kashmere Gate, Gurugram..."
+                autocomplete="off"
+                class="w-full pl-10 pr-4 py-3 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 text-slate-900 font-semibold text-sm outline-none transition"
+              >
+              <i data-lucide="navigation" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5"></i>
+            </div>
+            <!-- Suggestion dropdown To -->
+            <ul id="toSuggestions" class="hidden absolute top-full left-0 right-0 z-30 mt-1 max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl py-1 text-sm font-medium"></ul>
+          </div>
+
+        </div>
+
+        <!-- Quick Select Major Hubs -->
+        <div class="pt-1">
+          <p class="text-[11px] font-semibold text-slate-500 mb-2 flex items-center gap-1">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i> Major Interchange Hubs:
+          </p>
+          <div class="flex flex-wrap gap-1.5" id="quickPills">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="pt-2">
+          <button 
+            id="findRouteBtn"
+            class="w-full py-3.5 px-6 rounded-xl bg-slate-900 hover:bg-blue-600 active:bg-blue-700 text-white font-bold text-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
+          >
+            <i data-lucide="search" class="w-4 h-4 group-hover:scale-110 transition-transform"></i>
+            <span>Calculate Fastest & Cheapest Routes</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Alert / Validation Banner -->
+    <div id="errorBanner" class="hidden p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-3">
+      <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+      <div id="errorMessage" class="font-medium"></div>
+    </div>
+
+    <!-- Results Section -->
+    <section id="resultsSection" class="space-y-4 hidden">
+      
+      <!-- Result Mode Tabs -->
+      <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="git-merge" class="w-4 h-4 text-blue-600"></i> Route Comparison
+        </h3>
+        
+        <div class="inline-flex p-1 bg-slate-200/80 rounded-xl text-xs font-bold" role="tablist">
+          <button id="tabFastest" onclick="selectRouteTab('fastest')" class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-slate-900 shadow-sm">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-600"></i> Fastest Route
+          </button>
+          <button id="tabCheapest" onclick="selectRouteTab('cheapest')" class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
+            <i data-lucide="indian-rupee" class="w-3.5 h-3.5 text-emerald-600"></i> Cheapest Route
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Dual Comparison Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <!-- Fastest Card Preview -->
+        <div id="cardFastestPreview" onclick="selectRouteTab('fastest')" class="cursor-pointer p-4 rounded-2xl border-2 transition-all bg-white relative overflow-hidden">
+          <div class="flex items-center justify-between mb-2">
+            <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+              <i data-lucide="zap" class="w-3 h-3"></i> Minimum Travel Time
+            </span>
+            <span class="text-xs font-extrabold text-slate-900 font-mono" id="previewFastestTime">-- mins</span>
+          </div>
+          <div class="flex justify-between items-baseline text-slate-700 text-xs">
+            <div>Stops: <span class="font-bold text-slate-900" id="previewFastestStops">--</span></div>
+            <div>Interchanges: <span class="font-bold text-slate-900" id="previewFastestInterchanges">--</span></div>
+            <div>Token Fare: <span class="font-bold text-blue-600 font-mono text-sm" id="previewFastestFare">₹--</span></div>
+          </div>
+        </div>
+
+        <!-- Cheapest Card Preview -->
+        <div id="cardCheapestPreview" onclick="selectRouteTab('cheapest')" class="cursor-pointer p-4 rounded-2xl border-2 transition-all bg-white relative overflow-hidden">
+          <div class="flex items-center justify-between mb-2">
+            <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+              <i data-lucide="tag" class="w-3 h-3"></i> Lowest Metro Fare
+            </span>
+            <span class="text-xs font-extrabold text-emerald-700 font-mono text-sm" id="previewCheapestFare">₹--</span>
+          </div>
+          <div class="flex justify-between items-baseline text-slate-700 text-xs">
+            <div>Stops: <span class="font-bold text-slate-900" id="previewCheapestStops">--</span></div>
+            <div>Time: <span class="font-bold text-slate-900 font-mono" id="previewCheapestTime">-- mins</span></div>
+            <div>Interchanges: <span class="font-bold text-slate-900" id="previewCheapestInterchanges">--</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Detailed Breakdown & Timeline Container -->
+      <div id="routeDetailContainer" class="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-sm space-y-6">
+        <!-- Rendered via JavaScript -->
+      </div>
+
+    </section>
+
+    <!-- DMRC Fare Structure Reference Guide -->
+    <section class="bg-slate-100/90 rounded-2xl p-4 sm:p-5 border border-slate-200 text-xs text-slate-600 space-y-2">
+      <div class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+        <i data-lucide="info" class="w-4 h-4 text-blue-600"></i> DMRC Official Fare Structure & Tips
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-center py-1">
+        <div class="p-2 bg-white rounded-lg border border-slate-200">
+          <div class="text-[10px] text-slate-400">0 - 2 km</div>
+          <div class="font-bold text-slate-800">₹10</div>
+        </div>
+        <div class="p-2 bg-white rounded-lg border border-slate-200">
+          <div class="text-[10px] text-slate-400">2 - 5 km</div>
+          <div class="font-bold text-slate-800">₹20</div>
+        </div>
+        <div class="p-2 bg-white rounded-lg border border-slate-200">
+          <div class="text-[10px] text-slate-400">5 - 12 km</div>
+          <div class="font-bold text-slate-800">₹30</div>
+        </div>
+        <div class="p-2 bg-white rounded-lg border border-slate-200">
+          <div class="text-[10px] text-slate-400">12 - 21 km</div>
+          <div class="font-bold text-slate-800">₹40</div>
+        </div>
+        <div class="p-2 bg-white rounded-lg border border-slate-200">
+          <div class="text-[10px] text-slate-400">21 - 32 km</div>
+          <div class="font-bold text-slate-800">₹50</div>
+        </div>
+        <div class="p-2 bg-white rounded-lg border border-slate-200">
+          <div class="text-[10px] text-slate-400">> 32 km</div>
+          <div class="font-bold text-slate-800">₹60</div>
+        </div>
+      </div>
+      <p class="leading-relaxed">
+        • <strong>Smart Card Discount:</strong> 10% flat discount on all standard journeys, and up to 20% discount if entering during non-peak hours (before 08:00 AM, 12:00 PM to 05:00 PM, and after 09:00 PM).
+      </p>
+      <p class="leading-relaxed">
+        • <strong>Airport Express Line:</strong> Has a dedicated premium fare tariff (₹50 to ₹60 between New Delhi and IGI Airport / Dwarka Sec 21) with high-speed 80-100 km/h coaches.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- Compact Footer -->
+  <footer class="mt-auto border-t border-slate-200 bg-white py-6">
+    <div class="max-w-4xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
+      <p class="font-semibold text-slate-700">D-Indicator • Delhi Metro Route Planner & Fare Estimator</p>
+      <p>Clean, client-side offline route calculation with zero ads, tracking, or battery drain.</p>
+    </div>
+  </footer>
+
+  <script>
+    /*
+     * DELHI METRO NETWORK GRAPH
+     * Yellow, Blue, Red, Violet, Magenta, Pink, and Airport Express
+     */
+    const STATIONS = [
+      // Yellow Line (Line 2)
+      { id: 'SPB', name: 'Samaypur Badli', lines: ['YELLOW'] },
+      { id: 'AZP', name: 'Azadpur', lines: ['YELLOW', 'PINK'] },
+      { id: 'VSD', name: 'Vishwa Vidyalaya', lines: ['YELLOW'] },
+      { id: 'KTR', name: 'Kashmere Gate', lines: ['YELLOW', 'RED', 'VIOLET'] },
+      { id: 'CHNR', name: 'Chandni Chowk', lines: ['YELLOW'] },
+      { id: 'NDLS', name: 'New Delhi', lines: ['YELLOW', 'AIRPORT'] },
+      { id: 'RC', name: 'Rajiv Chowk', lines: ['YELLOW', 'BLUE'] },
+      { id: 'PATEL', name: 'Patel Chowk', lines: ['YELLOW'] },
+      { id: 'CS', name: 'Central Secretariat', lines: ['YELLOW', 'VIOLET'] },
+      { id: 'UDYOG', name: 'Udyog Bhawan', lines: ['YELLOW'] },
+      { id: 'LKM', name: 'Lok Kalyan Marg', lines: ['YELLOW'] },
+      { id: 'JRP', name: 'Jor Bagh', lines: ['YELLOW'] },
+      { id: 'INA', name: 'Dilli Haat - INA', lines: ['YELLOW', 'PINK'] },
+      { id: 'AIIMS', name: 'AIIMS', lines: ['YELLOW'] },
+      { id: 'GF', name: 'Green Park', lines: ['YELLOW'] },
+      { id: 'HK', name: 'Hauz Khas', lines: ['YELLOW', 'MAGENTA'] },
+      { id: 'MALV', name: 'Malviya Nagar', lines: ['YELLOW'] },
+      { id: 'SAKET', name: 'Saket', lines: ['YELLOW'] },
+      { id: 'QUTAB', name: 'Qutab Minar', lines: ['YELLOW'] },
+      { id: 'SULTAN', name: 'Sultanpur', lines: ['YELLOW'] },
+      { id: 'MG_RD', name: 'MG Road', lines: ['YELLOW'] },
+      { id: 'MCCG', name: 'Millennium City Centre Gurugram', lines: ['YELLOW'] },
+
+      // Blue Line (Line 3 & 4)
+      { id: 'DW_21', name: 'Dwarka Sector 21', lines: ['BLUE', 'AIRPORT'] },
+      { id: 'DW_9', name: 'Dwarka Sector 9', lines: ['BLUE'] },
+      { id: 'DW_MOR', name: 'Dwarka Mor', lines: ['BLUE'] },
+      { id: 'UTM_N', name: 'Uttam Nagar East', lines: ['BLUE'] },
+      { id: 'JKP_W', name: 'Janakpuri West', lines: ['BLUE', 'MAGENTA'] },
+      { id: 'TG_N', name: 'Tilak Nagar', lines: ['BLUE'] },
+      { id: 'SUB_N', name: 'Subhash Nagar', lines: ['BLUE'] },
+      { id: 'TAGORE', name: 'Tagore Garden', lines: ['BLUE'] },
+      { id: 'RG', name: 'Rajouri Garden', lines: ['BLUE', 'PINK'] },
+      { id: 'MOTI_N', name: 'Moti Nagar', lines: ['BLUE'] },
+      { id: 'KAROL_B', name: 'Karol Bagh', lines: ['BLUE'] },
+      { id: 'RK_ASH', name: 'Ramakrishna Ashram Marg', lines: ['BLUE'] },
+      // Rajiv Chowk (Interchange with Yellow)
+      { id: 'BRK', name: 'Barakhamba Road', lines: ['BLUE'] },
+      { id: 'MANDI', name: 'Mandi House', lines: ['BLUE', 'VIOLET'] },
+      { id: 'PRAGATI', name: 'Supreme Court (Pragati Maidan)', lines: ['BLUE'] },
+      { id: 'INDRA_P', name: 'Indraprastha', lines: ['BLUE'] },
+      { id: 'AXR_D', name: 'Akshardham', lines: ['BLUE'] },
+      { id: 'MAYUR_1', name: 'Mayur Vihar-I', lines: ['BLUE', 'PINK'] },
+      { id: 'MAYUR_EXT', name: 'Mayur Vihar Extension', lines: ['BLUE'] },
+      { id: 'N_SEC_15', name: 'Noida Sector 15', lines: ['BLUE'] },
+      { id: 'N_SEC_18', name: 'Noida Sector 18', lines: ['BLUE'] },
+      { id: 'BG', name: 'Botanical Garden', lines: ['BLUE', 'MAGENTA'] },
+      { id: 'N_SEC_52', name: 'Noida Sector 52', lines: ['BLUE'] },
+      { id: 'N_ELEC', name: 'Noida Electronic City', lines: ['BLUE'] },
+      // Blue Line Branch to Vaishali
+      { id: 'YAM_B', name: 'Yamuna Bank', lines: ['BLUE'] },
+      { id: 'ANAND_V', name: 'Anand Vihar ISBT', lines: ['BLUE', 'PINK'] },
+      { id: 'VAISHALI', name: 'Vaishali', lines: ['BLUE'] },
+
+      // Red Line (Line 1)
+      { id: 'RITHALA', name: 'Rithala', lines: ['RED'] },
+      { id: 'ROHINI_W', name: 'Rohini West', lines: ['RED'] },
+      { id: 'ROHINI_E', name: 'Rohini East', lines: ['RED'] },
+      { id: 'PITAM_P', name: 'Pitampura', lines: ['RED'] },
+      { id: 'NSP', name: 'Netaji Subhash Place', lines: ['RED', 'PINK'] },
+      { id: 'IND_LOK', name: 'Inderlok', lines: ['RED', 'GREEN'] },
+      { id: 'SHASTRI_P', name: 'Shastri Nagar', lines: ['RED'] },
+      { id: 'TIS_HAZ', name: 'Tis Hazari', lines: ['RED'] },
+      // Kashmere Gate (Interchange)
+      { id: 'SHASTRI_PK', name: 'Shastri Park', lines: ['RED'] },
+      { id: 'SEELAMPUR', name: 'Seelampur', lines: ['RED'] },
+      { id: 'WELCOME', name: 'Welcome', lines: ['RED', 'PINK'] },
+      { id: 'DILSHAD', name: 'Dilshad Garden', lines: ['RED'] },
+      { id: 'SHAH_STHAL', name: 'Shaheed Sthal (New Bus Adda)', lines: ['RED'] },
+
+      // Violet Line (Line 6)
+      // Kashmere Gate -> Mandi House -> Central Secretariat
+      { id: 'JANPATH', name: 'Janpath', lines: ['VIOLET'] },
+      { id: 'KHAN_MKT', name: 'Khan Market', lines: ['VIOLET'] },
+      { id: 'JLNN', name: 'JLN Stadium', lines: ['VIOLET'] },
+      { id: 'JANGPURA', name: 'Jangpura', lines: ['VIOLET'] },
+      { id: 'LAJPAT_N', name: 'Lajpat Nagar', lines: ['VIOLET', 'PINK'] },
+      { id: 'MOOLCHAND', name: 'Moolchand', lines: ['VIOLET'] },
+      { id: 'KALKAJI_M', name: 'Kalkaji Mandir', lines: ['VIOLET', 'MAGENTA'] },
+      { id: 'GOVIND', name: 'Govind Puri', lines: ['VIOLET'] },
+      { id: 'BADARPUR', name: 'Badarpur Border', lines: ['VIOLET'] },
+      { id: 'RNS_BALLABH', name: 'Raja Nahar Singh (Ballabhgarh)', lines: ['VIOLET'] },
+
+      // Magenta Line (Line 8)
+      // Janakpuri West -> Hauz Khas -> Botanical Garden
+      { id: 'DABRI_M', name: 'Dabri Mor - Janakpuri South', lines: ['MAGENTA'] },
+      { id: 'PALAM', name: 'Palam', lines: ['MAGENTA'] },
+      { id: 'SADAR_BAZ', name: 'Sadar Bazar Cantonment', lines: ['MAGENTA'] },
+      { id: 'TERM_1_IGI', name: 'Terminal 1-IGI Airport', lines: ['MAGENTA'] },
+      { id: 'MUNIRKA', name: 'Munirka', lines: ['MAGENTA'] },
+      { id: 'IIT', name: 'IIT Delhi', lines: ['MAGENTA'] },
+      // Hauz Khas (Interchange)
+      { id: 'PANCHSHEEL', name: 'Panchsheel Park', lines: ['MAGENTA'] },
+      { id: 'GREATER_K', name: 'Greater Kailash', lines: ['MAGENTA'] },
+      // Kalkaji Mandir (Interchange)
+      { id: 'OKHLA_NSIC', name: 'Okhla NSIC', lines: ['MAGENTA'] },
+      { id: 'JMI', name: 'Jamia Millia Islamia', lines: ['MAGENTA'] },
+      { id: 'KALINDI_K', name: 'Kalindi Kunj', lines: ['MAGENTA'] },
+      // Botanical Garden (Interchange)
+
+      // Pink Line (Line 7)
+      { id: 'MAJLIS_PK', name: 'Majlis Park', lines: ['PINK'] },
+      // Azadpur (Interchange)
+      // Netaji Subhash Place (Interchange)
+      { id: 'SHAKURPUR', name: 'Shakurpur', lines: ['PINK'] },
+      { id: 'PUNJABI_BG', name: 'Punjabi Bagh West', lines: ['PINK'] },
+      // Rajouri Garden (Interchange)
+      { id: 'DURGABAI', name: 'Durgabai Deshmukh South Campus', lines: ['PINK'] },
+      { id: 'MOTI_BAGH', name: 'Sir M. Vishweshwaraiah Moti Bagh', lines: ['PINK'] },
+      // Dilli Haat - INA (Interchange)
+      { id: 'SOUTH_EXT', name: 'South Extension', lines: ['PINK'] },
+      // Lajpat Nagar (Interchange)
+      { id: 'VINOBAPURI', name: 'Vinobapuri', lines: ['PINK'] },
+      { id: 'ASHRAM', name: 'Ashram', lines: ['PINK'] },
+      { id: 'SARAI_KAL', name: 'Sarai Kale Khan - Nizamuddin', lines: ['PINK'] },
+      // Mayur Vihar-I (Interchange)
+      { id: 'MAYUR_PK', name: 'Mayur Vihar Pocket 1', lines: ['PINK'] },
+      { id: 'TRILOKPURI', name: 'Trilokpuri Sanjay Lake', lines: ['PINK'] },
+      // Anand Vihar ISBT (Interchange)
+      { id: 'KARKARDOOMA', name: 'Karkardooma', lines: ['PINK', 'BLUE'] },
+      // Welcome (Interchange)
+      { id: 'SHIV_VIHAR', name: 'Shiv Vihar', lines: ['PINK'] },
+
+      // Airport Express Line (Orange Line)
+      // New Delhi (NDLS)
+      { id: 'SHIVAJI_STAD', name: 'Shivaji Stadium', lines: ['AIRPORT'] },
+      { id: 'DHAULA_KUAN', name: 'Dhaula Kuan', lines: ['AIRPORT'] },
+      { id: 'AEROCITY', name: 'Delhi Aerocity', lines: ['AIRPORT'] },
+      { id: 'IGI_T3', name: 'IGI Airport (Terminal 3)', lines: ['AIRPORT'] },
+      // Dwarka Sector 21 (DW_21)
+    ];
+
+    // Popular Hubs for Quick Selection
+    const POPULAR_HUBS = [
+      { name: 'Rajiv Chowk', code: 'RC' },
+      { name: 'Kashmere Gate', code: 'KTR' },
+      { name: 'New Delhi', code: 'NDLS' },
+      { name: 'Hauz Khas', code: 'HK' },
+      { name: 'Central Secretariat', code: 'CS' },
+      { name: 'Botanical Garden', code: 'BG' },
+      { name: 'Noida Electronic City', code: 'N_ELEC' },
+      { name: 'IGI Airport (T3)', code: 'IGI_T3' },
+      { name: 'Millennium City Centre', code: 'MCCG' }
+    ];
+
+    const graph = {};
+
+    function addEdge(u, v, minutes, lineType, distKm, isAirport = false) {
+      if (!graph[u]) graph[u] = [];
+      if (!graph[v]) graph[v] = [];
+      graph[u].push({ to: v, time: minutes, line: lineType, dist: distKm, isAirport });
+      graph[v].push({ to: u, time: minutes, line: lineType, dist: distKm, isAirport });
+    }
+
+    function linkChain(stationIds, lineName, avgTimePerHop = 2.2, avgDistPerHop = 1.6, isAirport = false) {
+      for (let i = 0; i < stationIds.length - 1; i++) {
+        addEdge(stationIds[i], stationIds[i + 1], avgTimePerHop, lineName, avgDistPerHop, isAirport);
+      }
+    }
+
+    // 1. Yellow Line chain
+    const yellowChain = [
+      'SPB', 'AZP', 'VSD', 'KTR', 'CHNR', 'NDLS', 'RC', 'PATEL', 
+      'CS', 'UDYOG', 'LKM', 'JRP', 'INA', 'AIIMS', 'GF', 'HK', 
+      'MALV', 'SAKET', 'QUTAB', 'SULTAN', 'MG_RD', 'MCCG'
+    ];
+    linkChain(yellowChain, 'YELLOW', 2.3, 1.8);
+
+    // 2. Blue Line Main Chain
+    const blueMainChain = [
+      'DW_21', 'DW_9', 'DW_MOR', 'UTM_N', 'JKP_W', 'TG_N', 'SUB_N', 
+      'TAGORE', 'RG', 'MOTI_N', 'KAROL_B', 'RK_ASH', 'RC', 'BRK', 
+      'MANDI', 'PRAGATI', 'INDRA_P', 'YAM_B', 'AXR_D', 'MAYUR_1', 
+      'MAYUR_EXT', 'N_SEC_15', 'N_SEC_18', 'BG', 'N_SEC_52', 'N_ELEC'
+    ];
+    linkChain(blueMainChain, 'BLUE', 2.2, 1.9);
+
+    // Blue Line Branch (Yamuna Bank to Vaishali)
+    addEdge('YAM_B', 'ANAND_V', 4.5, 'BLUE', 4.2);
+    addEdge('ANAND_V', 'VAISHALI', 3.0, 'BLUE', 2.6);
+
+    // 3. Red Line Chain
+    const redChain = [
+      'RITHALA', 'ROHINI_W', 'ROHINI_E', 'PITAM_P', 'NSP', 'IND_LOK', 
+      'SHASTRI_P', 'TIS_HAZ', 'KTR', 'SHASTRI_PK', 'SEELAMPUR', 
+      'WELCOME', 'DILSHAD', 'SHAH_STHAL'
+    ];
+    linkChain(redChain, 'RED', 2.1, 1.7);
+
+    // 4. Violet Line Chain
+    const violetChain = [
+      'KTR', 'MANDI', 'JANPATH', 'CS', 'KHAN_MKT', 'JLNN', 'JANGPURA', 
+      'LAJPAT_N', 'MOOLCHAND', 'KALKAJI_M', 'GOVIND', 'BADARPUR', 'RNS_BALLABH'
+    ];
+    linkChain(violetChain, 'VIOLET', 2.4, 2.0);
+
+    // 5. Magenta Line Chain
+    const magentaChain = [
+      'JKP_W', 'DABRI_M', 'PALAM', 'SADAR_BAZ', 'TERM_1_IGI', 'MUNIRKA', 
+      'IIT', 'HK', 'PANCHSHEEL', 'GREATER_K', 'KALKAJI_M', 'OKHLA_NSIC', 
+      'JMI', 'KALINDI_K', 'BG'
+    ];
+    linkChain(magentaChain, 'MAGENTA', 2.2, 2.1);
+
+    // 6. Pink Line Chain
+    const pinkChain = [
+      'MAJLIS_PK', 'AZP', 'NSP', 'SHAKURPUR', 'PUNJABI_BG', 'RG', 
+      'DURGABAI', 'MOTI_BAGH', 'INA', 'SOUTH_EXT', 'LAJPAT_N', 
+      'VINOBAPURI', 'ASHRAM', 'SARAI_KAL', 'MAYUR_1', 'MAYUR_PK', 
+      'TRILOKPURI', 'ANAND_V', 'KARKARDOOMA', 'WELCOME', 'SHIV_VIHAR'
+    ];
+    linkChain(pinkChain, 'PINK', 2.4, 1.8);
+
+    // 7. Airport Express Line (High Speed: ~90 km/h)
+    const airportChain = ['NDLS', 'SHIVAJI_STAD', 'DHAULA_KUAN', 'AEROCITY', 'IGI_T3', 'DW_21'];
+    linkChain(airportChain, 'AIRPORT', 3.8, 4.6, true);
+
+    /*
+     * DMRC Fare Slabs (Standard Network):
+     * 0 - 2 km: ₹10
+     * 2 - 5 km: ₹20
+     * 5 - 12 km: ₹30
+     * 12 - 21 km: ₹40
+     * 21 - 32 km: ₹50
+     * > 32 km: ₹60
+     * 
+     * Airport Express Line has dedicated special fare:
+     * Minimum ₹20, up to ₹50 - ₹60 for full run to Airport / Dwarka.
+     */
+    function computeDMRCFare(distanceKm, usesAirportLine = false) {
+      if (usesAirportLine) {
+        if (distanceKm <= 5) return 20;
+        if (distanceKm <= 12) return 30;
+        if (distanceKm <= 18) return 50;
+        return 60;
+      }
+      if (distanceKm <= 2) return 10;
+      if (distanceKm <= 5) return 20;
+      if (distanceKm <= 12) return 30;
+      if (distanceKm <= 21) return 40;
+      if (distanceKm <= 32) return 50;
+      return 60;
+    }
+
+    function getStation(id) {
+      return STATIONS.find(s => s.id === id);
+    }
+
+    function getStationName(id) {
+      const s = getStation(id);
+      return s ? s.name : id;
+    }
+
+    function findStationByQuery(query) {
+      if (!query) return null;
+      const q = query.trim().toLowerCase();
+      // Exact code
+      let found = STATIONS.find(s => s.id.toLowerCase() === q);
+      if (found) return found;
+      // Exact name
+      found = STATIONS.find(s => s.name.toLowerCase() === q);
+      if (found) return found;
+      // Partial name
+      return STATIONS.find(s => s.name.toLowerCase().includes(q));
+    }
+
+    function calculateRoute(startId, targetId, mode = 'fastest') {
+      const distances = {};
+      const previous = {};
+      const edgeUsed = {};
+      const nodes = new Set();
+
+      for (const node in graph) {
+        distances[node] = Infinity;
+        nodes.add(node);
+      }
+      distances[startId] = 0;
+
+      while (nodes.size > 0) {
+        let closestNode = null;
+        for (const node of nodes) {
+          if (closestNode === null || distances[node] < distances[closestNode]) {
+            closestNode = node;
+          }
+        }
+
+        if (distances[closestNode] === Infinity) break;
+        if (closestNode === targetId) break;
+
+        nodes.delete(closestNode);
+
+        const currentEdge = edgeUsed[closestNode];
+        const currentLine = currentEdge ? currentEdge.line : null;
+
+        for (const edge of graph[closestNode]) {
+          if (!nodes.has(edge.to)) continue;
+
+          let edgeWeight = 0;
+
+          if (mode === 'fastest') {
+            edgeWeight = edge.time;
+            // Interchange walking penalty: 5.5 minutes added when switching lines
+            if (currentLine && currentLine !== edge.line) {
+              edgeWeight += 5.5;
+            }
+          } else {
+            // Mode: Cheapest
+            // Regular line distance, with heavy penalty for high-fare Airport line
+            edgeWeight = edge.dist;
+            if (edge.isAirport) {
+              edgeWeight += 25; // Discourage Airport Line for cheapest path
+            }
+            if (currentLine && currentLine !== edge.line) {
+              edgeWeight += 0.5; // slight penalty for multiple transfers
+            }
+          }
+
+          const alt = distances[closestNode] + edgeWeight;
+          if (alt < distances[edge.to]) {
+            distances[edge.to] = alt;
+            previous[edge.to] = closestNode;
+            edgeUsed[edge.to] = edge;
+          }
+        }
+      }
+
+      // Trace back path
+      const path = [];
+      const edges = [];
+      let curr = targetId;
+
+      if (!previous[curr] && curr !== startId) {
+        return null; // Route not found
+      }
+
+      while (curr) {
+        path.unshift(curr);
+        if (edgeUsed[curr]) {
+          edges.unshift(edgeUsed[curr]);
+        }
+        curr = previous[curr];
+      }
+
+      let totalMinutes = 0;
+      let totalDist = 0;
+      let interchanges = 0;
+      let usedAirport = false;
+      let lastLine = null;
+
+      edges.forEach(e => {
+        totalMinutes += e.time;
+        totalDist += e.dist;
+        if (e.isAirport) usedAirport = true;
+        if (lastLine && lastLine !== e.line) {
+          interchanges++;
+          totalMinutes += 5.0; // average transfer walk buffer
+        }
+        lastLine = e.line;
+      });
+
+      const tokenFare = computeDMRCFare(totalDist, usedAirport);
+      // Smart Card: 10% standard discount, 20% non-peak
+      const smartCardFare = Math.max(9, Math.round(tokenFare * 0.9));
+      const nonPeakFare = Math.max(8, Math.round(tokenFare * 0.8));
+
+      return {
+        path,
+        edges,
+        totalTime: Math.round(totalMinutes),
+        totalDist: Math.round(totalDist * 10) / 10,
+        stopsCount: path.length - 1,
+        interchanges,
+        tokenFare,
+        smartCardFare,
+        nonPeakFare,
+        usedAirport
+      };
+    }
+
+    let currentResults = {
+      fastest: null,
+      cheapest: null,
+      activeTab: 'fastest'
+    };
+
+    const fromInput = document.getElementById('fromStationInput');
+    const toInput = document.getElementById('toStationInput');
+    const fromSuggestions = document.getElementById('fromSuggestions');
+    const toSuggestions = document.getElementById('toSuggestions');
+    const swapBtn = document.getElementById('swapBtn');
+    const findRouteBtn = document.getElementById('findRouteBtn');
+    const quickPills = document.getElementById('quickPills');
+    const resultsSection = document.getElementById('resultsSection');
+    const errorBanner = document.getElementById('errorBanner');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Populate Hub buttons
+    POPULAR_HUBS.forEach(hub => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition active:scale-95';
+      btn.textContent = hub.name;
+      btn.onclick = () => {
+        if (!fromInput.value) {
+          fromInput.value = hub.name;
+          toInput.focus();
+        } else if (!toInput.value && fromInput.value !== hub.name) {
+          toInput.value = hub.name;
+          triggerRouteSearch();
+        } else {
+          toInput.value = hub.name;
+        }
+      };
+      quickPills.appendChild(btn);
+    });
+
+    function getLineColorClass(line) {
+      switch (line) {
+        case 'YELLOW': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        case 'BLUE': return 'bg-blue-100 text-blue-800 border-blue-300';
+        case 'RED': return 'bg-red-100 text-red-800 border-red-300';
+        case 'VIOLET': return 'bg-purple-100 text-purple-800 border-purple-300';
+        case 'MAGENTA': return 'bg-pink-100 text-pink-800 border-pink-300';
+        case 'PINK': return 'bg-rose-100 text-rose-800 border-rose-300';
+        case 'AIRPORT': return 'bg-orange-100 text-orange-800 border-orange-300';
+        default: return 'bg-slate-100 text-slate-700 border-slate-300';
+      }
+    }
+
+    function setupAutocomplete(inputElement, dropdownElement) {
+      inputElement.addEventListener('input', () => {
+        const val = inputElement.value.trim().toLowerCase();
+        dropdownElement.innerHTML = '';
+
+        if (val.length === 0) {
+          dropdownElement.classList.add('hidden');
+          return;
+        }
+
+        const filtered = STATIONS.filter(s => {
+          return s.name.toLowerCase().includes(val) || s.id.toLowerCase().includes(val);
+        });
+
+        if (filtered.length === 0) {
+          dropdownElement.classList.add('hidden');
+          return;
+        }
+
+        filtered.slice(0, 8).forEach(s => {
+          const li = document.createElement('li');
+          const badges = s.lines.map(line => {
+            return `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border ${getLineColorClass(line)}">${line}</span>`;
+          }).join(' ');
+
+          li.className = 'px-3.5 py-2.5 hover:bg-slate-100 cursor-pointer flex items-center justify-between transition border-b border-slate-50 last:border-0';
+          li.innerHTML = `
+            <div class="flex items-center gap-2">
+              <i data-lucide="subway" class="w-3.5 h-3.5 text-slate-400"></i>
+              <span class="text-slate-800 font-semibold">${s.name}</span>
+            </div>
+            <div class="flex items-center gap-1">${badges}</div>
+          `;
+
+          li.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            inputElement.value = s.name;
+            dropdownElement.classList.add('hidden');
+          });
+
+          dropdownElement.appendChild(li);
+        });
+
+        dropdownElement.classList.remove('hidden');
+        lucide.createIcons();
+      });
+
+      inputElement.addEventListener('blur', () => {
+        setTimeout(() => dropdownElement.classList.add('hidden'), 200);
+      });
+    }
+
+    setupAutocomplete(fromInput, fromSuggestions);
+    setupAutocomplete(toInput, toSuggestions);
+
+    // Swap button
+    swapBtn.addEventListener('click', () => {
+      const temp = fromInput.value;
+      fromInput.value = toInput.value;
+      toInput.value = temp;
+      if (fromInput.value && toInput.value) {
+        triggerRouteSearch();
+      }
+    });
+
+    findRouteBtn.addEventListener('click', triggerRouteSearch);
+
+    function showError(msg) {
+      errorBanner.classList.remove('hidden');
+      errorMessage.textContent = msg;
+      resultsSection.classList.add('hidden');
+      lucide.createIcons();
+    }
+
+    function hideError() {
+      errorBanner.classList.add('hidden');
+    }
+
+    function triggerRouteSearch() {
+      hideError();
+      const fromVal = fromInput.value.trim();
+      const toVal = toInput.value.trim();
+
+      if (!fromVal || !toVal) {
+        showError("Please enter both Source and Destination metro stations.");
+        return;
+      }
+
+      const start = findStationByQuery(fromVal);
+      const dest = findStationByQuery(toVal);
+
+      if (!start) {
+        showError(`Station "${fromVal}" not found. Try Rajiv Chowk, Hauz Khas, Kashmere Gate, etc.`);
+        return;
+      }
+      if (!dest) {
+        showError(`Station "${toVal}" not found. Try Noida Electronic City, IGI Airport, Gurugram, etc.`);
+        return;
+      }
+
+      if (start.id === dest.id) {
+        showError("Origin and Destination are the exact same station.");
+        return;
+      }
+
+      const fastest = calculateRoute(start.id, dest.id, 'fastest');
+      const cheapest = calculateRoute(start.id, dest.id, 'cheapest');
+
+      if (!fastest || !cheapest) {
+        showError("No metro connection could be found between these two stations.");
+        return;
+      }
+
+      currentResults.fastest = fastest;
+      currentResults.cheapest = cheapest;
+
+      // Update previews
+      document.getElementById('previewFastestTime').textContent = `~${fastest.totalTime} mins`;
+      document.getElementById('previewFastestStops').textContent = fastest.stopsCount;
+      document.getElementById('previewFastestInterchanges').textContent = fastest.interchanges;
+      document.getElementById('previewFastestFare').textContent = `₹${fastest.tokenFare}`;
+
+      document.getElementById('previewCheapestFare').textContent = `₹${cheapest.tokenFare}`;
+      document.getElementById('previewCheapestStops').textContent = cheapest.stopsCount;
+      document.getElementById('previewCheapestTime').textContent = `~${cheapest.totalTime} mins`;
+      document.getElementById('previewCheapestInterchanges').textContent = cheapest.interchanges;
+
+      resultsSection.classList.remove('hidden');
+      selectRouteTab(currentResults.activeTab);
+
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function selectRouteTab(tab) {
+      currentResults.activeTab = tab;
+      const tabFastest = document.getElementById('tabFastest');
+      const tabCheapest = document.getElementById('tabCheapest');
+      const cardFastest = document.getElementById('cardFastestPreview');
+      const cardCheapest = document.getElementById('cardCheapestPreview');
+
+      if (tab === 'fastest') {
+        tabFastest.className = "px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-slate-900 shadow-sm font-bold";
+        tabCheapest.className = "px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium";
+        
+        cardFastest.className = "cursor-pointer p-4 rounded-2xl border-2 border-blue-600 ring-2 ring-blue-600/10 transition-all bg-white relative overflow-hidden shadow-sm";
+        cardCheapest.className = "cursor-pointer p-4 rounded-2xl border-2 border-slate-200 transition-all bg-white relative overflow-hidden hover:border-slate-300";
+        
+        renderRouteDetails(currentResults.fastest, "⚡ Fastest Route", "Optimized for minimal total duration and high-speed corridors");
+      } else {
+        tabCheapest.className = "px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-emerald-700 shadow-sm font-bold";
+        tabFastest.className = "px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium";
+        
+        cardCheapest.className = "cursor-pointer p-4 rounded-2xl border-2 border-emerald-500 ring-2 ring-emerald-500/10 transition-all bg-white relative overflow-hidden shadow-sm";
+        cardFastest.className = "cursor-pointer p-4 rounded-2xl border-2 border-slate-200 transition-all bg-white relative overflow-hidden hover:border-slate-300";
+        
+        renderRouteDetails(currentResults.cheapest, "💰 Cheapest Route", "Calculated for lowest ticket fare, avoiding high-tariff premium lines");
+      }
+
+      lucide.createIcons();
+    }
+
+    function getLineHeaderBadge(lineCode) {
+      switch (lineCode) {
+        case 'YELLOW': return '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800"><span class="w-2 h-2 rounded-full bg-yellow-500"></span> Yellow Line</span>';
+        case 'BLUE': return '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800"><span class="w-2 h-2 rounded-full bg-blue-600"></span> Blue Line</span>';
+        case 'RED': return '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800"><span class="w-2 h-2 rounded-full bg-red-600"></span> Red Line</span>';
+        case 'VIOLET': return '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-800"><span class="w-2 h-2 rounded-full bg-purple-600"></span> Violet Line</span>';
+        case 'MAGENTA': return '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-pink-100 text-pink-800"><span class="w-2 h-2 rounded-full bg-pink-600"></span> Magenta Line</span>';
+        case 'PINK': return '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Pink Line</span>';
+        case 'AIRPORT': return '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-100 text-orange-800"><span class="w-2 h-2 rounded-full bg-orange-600"></span> Airport Express</span>';
+        default: return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">${lineCode} Line</span>`;
+      }
+    }
+
+    function renderRouteDetails(routeData, badgeTitle, subtitle) {
+      const container = document.getElementById('routeDetailContainer');
+      if (!routeData) return;
+
+      const originName = getStationName(routeData.path[0]);
+      const destinationName = getStationName(routeData.path[routeData.path.length - 1]);
+
+      let html = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-900">${badgeTitle}</span>
+              <span class="text-xs text-slate-400">•</span>
+              <span class="text-xs text-slate-500 font-medium">${subtitle}</span>
+            </div>
+            <h4 class="text-lg font-extrabold text-slate-900 mt-1">${originName} <span class="text-slate-400">→</span> ${destinationName}</h4>
+          </div>
+          
+          <!-- Fare Badges -->
+          <div class="flex items-center gap-2">
+            <div class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-center">
+              <div class="text-[10px] uppercase font-bold text-slate-500">Token Fare</div>
+              <div class="text-base font-extrabold text-slate-900 font-mono">₹${routeData.tokenFare}</div>
+            </div>
+            <div class="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+              <div class="text-[10px] uppercase font-bold text-emerald-700">Smart Card</div>
+              <div class="text-base font-extrabold text-emerald-800 font-mono">₹${routeData.smartCardFare}</div>
+            </div>
+            <div class="hidden sm:block px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-center">
+              <div class="text-[10px] uppercase font-bold text-blue-700">Non-Peak Card</div>
+              <div class="text-base font-extrabold text-blue-800 font-mono">₹${routeData.nonPeakFare}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Summary Bar -->
+        <div class="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-xl text-center text-xs">
+          <div>
+            <span class="text-slate-400 block text-[11px]">Est. Travel Time</span>
+            <span class="font-bold text-slate-800 text-sm font-mono">~${routeData.totalTime} mins</span>
+          </div>
+          <div class="border-x border-slate-200">
+            <span class="text-slate-400 block text-[11px]">Total Distance</span>
+            <span class="font-bold text-slate-800 text-sm font-mono">${routeData.totalDist} km</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[11px]">Intermediate Stations</span>
+            <span class="font-bold text-slate-800 text-sm font-mono">${routeData.stopsCount} stops</span>
+          </div>
+        </div>
+
+        <!-- Step-by-Step Directions -->
+        <div class="space-y-4 pt-2">
+          <h5 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <i data-lucide="list-ordered" class="w-4 h-4 text-blue-600"></i> Detailed Step-By-Step Journey
+          </h5>
+
+          <div class="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200">
+      `;
+
+      let currentLine = null;
+      let legStartStation = null;
+      let legHopCount = 0;
+
+      for (let i = 0; i < routeData.edges.length; i++) {
+        const edge = routeData.edges[i];
+        const fromStnName = getStationName(routeData.path[i]);
+        const toStnName = getStationName(routeData.path[i+1]);
+
+        if (i === 0) {
+          currentLine = edge.line;
+          legStartStation = fromStnName;
+          legHopCount = 1;
+
+          html += `
+            <div class="relative group">
+              <span class="absolute -left-6 top-1.5 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white"></span>
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 text-sm">${fromStnName}</span>
+                  ${getLineHeaderBadge(edge.line)}
+                </div>
+                <p class="text-xs text-slate-600">Board metro train on <strong>${edge.line} Line</strong> towards <strong>${toStnName}</strong>.</p>
+              </div>
+            </div>
+          `;
+        } else if (currentLine !== edge.line) {
+          // Interchange station reached
+          const interchangeStn = fromStnName;
+          html += `
+            <div class="relative group my-2">
+              <span class="absolute -left-6 top-1.5 w-3 h-3 rounded-full bg-amber-500 ring-4 ring-white"></span>
+              <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-1">
+                <div class="flex items-center gap-2 font-bold text-amber-900 text-xs">
+                  <i data-lucide="footprints" class="w-3.5 h-3.5 text-amber-700"></i>
+                  <span>Interchange at ${interchangeStn} (~5-6 min walk)</span>
+                </div>
+                <p class="text-[11px] text-amber-800">
+                  Follow overhead signs towards <strong>${edge.line} Line</strong> platform.
+                </p>
+              </div>
+            </div>
+
+            <div class="relative group">
+              <span class="absolute -left-6 top-1.5 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white"></span>
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 text-sm">${interchangeStn}</span>
+                  ${getLineHeaderBadge(edge.line)}
+                </div>
+                <p class="text-xs text-slate-600">Board connecting train on <strong>${edge.line} Line</strong> towards <strong>${toStnName}</strong>.</p>
+              </div>
+            </div>
+          `;
+          currentLine = edge.line;
+          legStartStation = interchangeStn;
+          legHopCount = 1;
+        } else {
+          legHopCount++;
+        }
+
+        // Final Destination Arrival
+        if (i === routeData.edges.length - 1) {
+          html += `
+            <div class="relative group">
+              <span class="absolute -left-6 top-1.5 w-3 h-3 rounded-full bg-rose-500 ring-4 ring-white"></span>
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-slate-900 text-sm">${destinationName}</span>
+                  <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">Destination</span>
+                </div>
+                <p class="text-xs text-slate-600">Alight here. Total ${routeData.stopsCount} stations traveled with ${routeData.interchanges} transfer${routeData.interchanges === 1 ? '' : 's'}.</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      html += `
+          </div>
+        </div>
+
+        <!-- Collapsible list of all stations passed in order -->
+        <details class="group border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+          <summary class="cursor-pointer text-xs font-semibold text-slate-700 flex items-center justify-between select-none">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-blue-600"></i> View all ${routeData.path.length} stations in order
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <div class="mt-3 pt-3 border-t border-slate-200 flex flex-wrap gap-1.5 text-xs text-slate-600 font-medium">
+            ${routeData.path.map((stnId, idx) => {
+              const name = getStationName(stnId);
+              const isStart = idx === 0;
+              const isEnd = idx === routeData.path.length - 1;
+              const badgeClass = isStart ? 'bg-emerald-100 text-emerald-800 font-bold' : isEnd ? 'bg-rose-100 text-rose-800 font-bold' : 'bg-white border border-slate-200 text-slate-700';
+              return `<span class="px-2 py-1 rounded-lg ${badgeClass}">${idx + 1}. ${name}</span>`;
+            }).join('')}
+          </div>
+        </details>
+      `;
+
+      container.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    // Default initialization: pre-fill a popular journey for demo
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      fromInput.value = 'Rajiv Chowk';
+      toInput.value = 'IGI Airport (Terminal 3)';
+      triggerRouteSearch();
+    });
+  </script>
+</body>
+</html>
